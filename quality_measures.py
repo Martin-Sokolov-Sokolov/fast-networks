@@ -11,7 +11,6 @@ def average_conductance(G: nx.Graph, communities):
     return sum(conductance_values) / len(conductance_values)
 
 
-def NMI(communities1, communities2):
-    nmi = normalized_mutual_info_score(communities1, communities2)
-
+def NMI(labels_true, labels_pred):
+    nmi = normalized_mutual_info_score(labels_true, labels_pred)
     return nmi
