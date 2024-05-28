@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+import networkx as nx
+
 def community_to_label(community_list, N):
     label = [0] * N
     for i, community in enumerate(community_list):
@@ -17,3 +20,8 @@ def ground_truth_communities(G):
                     c[1].add(node)
                     break
     return [c[1] for c in communities]
+
+def plot_graph(graph):
+    pos = nx.spring_layout(graph)
+    nx.draw(graph, pos, with_labels=True, node_color='skyblue', edge_color='k')
+    plt.show()

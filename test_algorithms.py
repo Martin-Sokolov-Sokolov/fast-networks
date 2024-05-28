@@ -4,7 +4,7 @@ from louvain_network import louvain
 from fluid_communities import fluidc
 from quality_measures import NMI
 from lfr_benchmark import create_graph
-from helper_functions import community_to_label, ground_truth_communities
+from helper_functions import community_to_label, ground_truth_communities, plot_graph
 
 def calculate_average_nmi_for_mu_values(mu_values, N, k, average_degree, min_communities, runs=10):
     nmi_scores = {mu: {'Louvain': 0, 'Fluid Communities': 0} for mu in mu_values}
@@ -60,7 +60,10 @@ def plot_nmi_scores(nmi_scores):
 
     plt.tight_layout()
     plt.show()
-    
+
+def plot(graph):
+    plot_graph(graph)
+
 def run(mu_values, N, k, average_degree, min_communities):
     nmi_scores = calculate_average_nmi_for_mu_values(mu_values, N, k, average_degree, min_communities)
     plot_nmi_scores(nmi_scores)
