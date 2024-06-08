@@ -11,11 +11,11 @@ import markov_clustering as mc
 import random
 import time
 
-N = 2000
+N = 250
 k = 3
 mu_values = [0.1, 0.2, 0.3]
 average_degree = 4
-min_communities = 200
+min_communities = 20
 
 #A = np.array([
 #    [0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0],
