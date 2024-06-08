@@ -1,38 +1,40 @@
 import numpy as np
 import sklearn.preprocessing
 from scipy.sparse import isspmatrix, dok_matrix, csc_matrix
-import markov_clustering as mc
+import time
+import networkx as nx
 
 def expansion(A, power = 2):
-    if isspmatrix(A):
-        return A ** power
-    return np.linalg.matrix_power(A, power)
+    return A ** power
     
 def inflation(A, power = 2):
-    if isspmatrix(A):
-        return A.power(power)
-    
-    return np.power(A, power)
+    return A.power(power)
 
 def normalize(A):
-    return sklearn.preprocessing.normalize(A, norm="l1", axis = 0)
+    column_sums = A.sum(axis = 0)
+    return A / column_sums
 
 def add_self_loops(A):
-    return A + np.eye(A.shape[0])
+    A = A.tolil()
+    A.setdiag(1)
+    return A.tocsr()
 
-def prune(A, threshold = 1e-6):
-    return normalize(np.where(A < threshold, 0, A))
+def prune(A, pruning = 0.001):
+    return A.multiply(A >= pruning)
 
 # One iteration is expansion followed by inflation and normalization
 # So normalize . inflation . expansion . A
 def iterate(A, expansion_power, inflation_power):
     return normalize(inflation(expansion(A, expansion_power), inflation_power))
 
-def converged(A, B, threshold = 0.1):
-    return np.linalg.norm(A - B) < threshold
+def sparse_allclose(a, b, rtol=1e-5, threshold=1e-6):
+    c = np.abs(a - b) - rtol * np.abs(b)
+    return c.max() <= threshold
+
+def converged(A, B, threshold = 1e-6):
+    return sparse_allclose(A, B, threshold)
 
 def get_clusters(A):
-
     if not isspmatrix(A):
         A = csc_matrix(A)
 
@@ -46,14 +48,34 @@ def get_clusters(A):
 
     return sorted(list(clusters))
 
-def mcl(A, expansion_power = 2, inflation_power = 2, threshold = 0.1, iterations = 100):
+def mcl(A, expansion_power = 2, inflation_power = 2, threshold = 1e-6, iterations = 100
+                              , pruning_threshold = 0.001, pruning_frequency = 2):
+
+    if not isspmatrix(A):
+        A = csc_matrix(A)
+
     A = add_self_loops(A)
     A = normalize(A)
-    B = iterate(A, expansion_power, inflation_power)
+
     for i in range(iterations):
-        A = B
-        B = iterate(A, expansion_power, inflation_power)
-    return B
+        last_A = A.copy()
+        A = iterate(A, expansion_power, inflation_power)
+        if i % pruning_frequency == 0:
+            A = prune(A, pruning_threshold)
+
+        if converged(A, last_A, threshold):
+            break
+
+    return A
+
+def execute_mcl(G, expansion_power = 2, inflation_power = 2, threshold = 1e-6, iterations = 100):
+    A = nx.to_numpy_array(G)
+    start_time = time.time()
+    result = mcl(A, expansion_power, inflation_power, threshold, iterations)
+    end_time = time.time()
+    execution_time = end_time - start_time
+    clusters = get_clusters(result)
+    return clusters, execution_time
 
 A = np.array([
     [0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0],
@@ -69,7 +91,3 @@ A = np.array([
     [0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1],
     [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0]
 ])
-
-result = mcl(A)
-clusters = get_clusters(result)
-print(clusters)
