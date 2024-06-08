@@ -18,7 +18,7 @@ def calculate_average_nmi_for_mu_values(mu_values, N, k, average_degree, min_com
             true_communities = ground_truth_communities(graph)
             louvain_communities, louvain_time = louvain(graph)
             fluidc_communities, fluidc_time = fluidc(graph, len(true_communities))
-            mcl_communities, mcl_time = execute_mcl(graph)
+            mcl_communities, mcl_time = execute_mcl(graph, len(true_communities))
 
             true_labels = community_to_label(true_communities, N)
             louvain_labels = community_to_label(louvain_communities, N)
