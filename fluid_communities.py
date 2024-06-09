@@ -13,11 +13,7 @@ def fluidc(G: nx.Graph, k: int):
     if nx.is_connected(G):
         fluidc_communities = list(nx.community.asyn_fluidc(G, k = k, seed=10))
     else:
-        Gcc = sorted(nx.connected_components(G), key=len, reverse=True)
-        for component in Gcc:
-            subgraph = G.subgraph(component)
-            component_communities = nx.community.asyn_fluidc(subgraph, k = k, seed=10)
-            fluidc_communities.extend(component_communities)
+        return [], 0
 
     end_time = time.time()
     execution_time = end_time - start_time

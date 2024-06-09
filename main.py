@@ -11,31 +11,14 @@ import markov_clustering as mc
 import random
 import time
 
-N = 1000
-k = 3
-mu_values = [0.1, 0.2, 0.3, 0.4, 0.5]
+N = 250
+y = 3
+mu_values = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
 average_degree = 8
-min_communities = 100
-
-#A = np.array([
-#    [0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0],
-#    [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-#    [0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-#    [0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0],
-#    [0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0],
-#    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-#    [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
-#    [0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0],
-#    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1],
-#    [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-#    [0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1],
-#    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0]
-#])
-#
-#G = nx.from_numpy_array(A)
+min_communities = 10
 
 def main():
-    run(mu_values, N, k, average_degree, min_communities)
+    run(mu_values, N, y, average_degree, min_communities)
 
 if __name__ == "__main__":
     main()
