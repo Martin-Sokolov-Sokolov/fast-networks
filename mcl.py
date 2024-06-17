@@ -27,8 +27,8 @@ def add_start_clusters(matrix, starting_communities = None):
         for ind, val in starting_communities:
             rows = matrix[:, ind].nonzero()[0]
             for row in rows:
-                matrix[row, ind] += 0.1 * val
-                matrix[ind, row] += 0.1 * val
+                matrix[row, ind] += 1 * val
+                matrix[ind, row] += 1 * val
         
     return matrix
 
@@ -83,14 +83,27 @@ def get_clusters(A):
         A = csc_matrix(A)
 
     attractors = A.diagonal().nonzero()[0]
+    non_attractors = set(range(A.shape[0])) - set(attractors)
 
-    clusters = set()
+    clusters = {}
 
+    # Initially, add each attractor to its own cluster
     for attractor in attractors:
-        cluster = tuple(A.getrow(attractor).nonzero()[1].tolist())
-        clusters.add(cluster)
+        clusters[attractor] = [attractor]
 
-    return sorted(list(clusters))
+
+    # Assign each non-attractor to the cluster of the attractor with the highest connection value
+    for non_attractor in non_attractors:
+        col = A.getcol(non_attractor).toarray()
+        # Find the attractor with the highest value for this non-attractor
+        highest_attractor = np.argmax(col)
+        if highest_attractor in clusters:
+            clusters[highest_attractor].append(non_attractor)
+        else:
+            clusters[highest_attractor] = [non_attractor]
+
+    # Convert clusters dictionary to a sorted list of tuples
+    return sorted([tuple(cluster) for cluster in clusters.values()])
 
 
 def mcl(A, expansion_power = 2, inflation_power = 2, threshold = 1e-6, iterations = 100
@@ -114,7 +127,7 @@ def mcl(A, expansion_power = 2, inflation_power = 2, threshold = 1e-6, iteration
     return A
 
 def execute_mcl(G, num_communities, expansion_power = 2, inflation_power = 2, threshold = 1e-6
-                                                       , iterations = 100, pruning_threshold = 0.001, pruning_frequency = 6):
+                                                       , iterations = 100, pruning_threshold = 0.001, pruning_frequency = 1):
     A = nx.to_numpy_array(G)
     start_time = time.time()
     starting_communities = get_starting_clusters(G, num_communities)
@@ -134,23 +147,23 @@ def original_mcl(G):
     execution_time = end_time - time_start
     
     return clusters, execution_time
-
-A = np.array([
-    [0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0],
-    [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0],
-    [0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0],
-    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1],
-    [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0]
-])
-
+#
+#A = np.array([
+#    [0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0],
+#    [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+#    [0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+#    [0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0],
+#    [0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+#    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+#    [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+#    [0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0],
+#    [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1],
+#    [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+#    [0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1],
+#    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0]
+#])
+#
 #G = nx.from_numpy_array(A)
 #sc = get_starting_clusters(G, 3)
 #clusters, execution_time = execute_mcl(G, 3)
-#print(clusters)
+#print(clusters, execution_time)

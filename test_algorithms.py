@@ -9,7 +9,7 @@ from lfr_benchmark import create_graph
 from helper_functions import community_to_label, ground_truth_communities, plot_graph
 from quality_measures import calculate_modularity
 
-def calculate_average_nmi_for_mu_values(mu_values, N, k, average_degree, min_communities, runs=10):
+def calculate_average_nmi_for_mu_values(mu_values, N, k, average_degree, min_communities, runs=1):
     nmi_scores = {mu: {'Louvain': 0, 'Fluid Communities': 0, 'MCL': 0} for mu in mu_values}
     time_scores = {mu: {'Louvain': 0, 'Fluid Communities': 0, 'MCL': 0} for mu in mu_values}
 
@@ -23,6 +23,8 @@ def calculate_average_nmi_for_mu_values(mu_values, N, k, average_degree, min_com
             louvain_communities, louvain_time = louvain(graph)
             fluidc_communities, fluidc_time = fluidc(graph, len(true_communities))
             mcl_communities, mcl_time = execute_mcl(graph, len(true_communities))
+
+            print(len(mcl_communities))
 
             true_labels = community_to_label(true_communities, N)
             louvain_labels = community_to_label(louvain_communities, N)
@@ -170,7 +172,7 @@ def plot_one_figure(nmi_scores, time_scores):
     plt.savefig('NMI_Scores.png')
 
 
-def calculate_average_modularity_for_mu_values(mu_values, N, k, average_degree, min_communities, runs=10):
+def calculate_average_modularity_for_mu_values(mu_values, N, k, average_degree, min_communities, runs=1):
     modularity_scores = {mu: {'Louvain': 0, 'Fluid Communities': 0, 'MCL': 0} for mu in mu_values}
 
     for _ in range(runs):
@@ -215,9 +217,13 @@ def plot_modularity_scores(modularity_scores):
     plt.ylabel('Average modularity')
     plt.title('Average modularity Scores')
     plt.legend()
-    plt.savefig('modularity_Scores.png')
+    plt.show()
+    #plt.savefig('modularity_Scores.png')
 
 def run(mu_values, N, k, average_degree, min_communities):
     nmi_scores, time_scores = calculate_average_nmi_for_mu_values(mu_values, N, k, average_degree, min_communities)
     print(nmi_scores)
     plot_nmi_scores(nmi_scores, time_scores)
+    
+    #modularity_scores = calculate_average_modularity_for_mu_values(mu_values, N, k, average_degree, min_communities)
+    #plot_modularity_scores(modularity_scores)
