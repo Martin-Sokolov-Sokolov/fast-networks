@@ -11,7 +11,7 @@ import markov_clustering as mc
 import random
 import time
 
-N = 250
+N = 1000
 y = 3
 mu_values = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
 average_degree = 8

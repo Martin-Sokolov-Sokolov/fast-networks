@@ -27,8 +27,8 @@ def add_start_clusters(matrix, starting_communities = None):
         for ind, val in starting_communities:
             rows = matrix[:, ind].nonzero()[0]
             for row in rows:
-                matrix[row, ind] += 1 * val
-                matrix[ind, row] += 1 * val
+                matrix[row, ind] += math.exp(val) / len(rows)
+                matrix[ind, row] += math.exp(val) / len(rows)
         
     return matrix
 

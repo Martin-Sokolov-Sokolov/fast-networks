@@ -23,8 +23,10 @@ def calculate_average_nmi_for_mu_values(mu_values, N, k, average_degree, min_com
             louvain_communities, louvain_time = louvain(graph)
             fluidc_communities, fluidc_time = fluidc(graph, len(true_communities))
             mcl_communities, mcl_time = execute_mcl(graph, len(true_communities))
+            #mcl_communities, mcl_time = original_mcl(graph)
 
             print(len(mcl_communities))
+            print(len(true_communities))
 
             true_labels = community_to_label(true_communities, N)
             louvain_labels = community_to_label(louvain_communities, N)
@@ -221,9 +223,9 @@ def plot_modularity_scores(modularity_scores):
     #plt.savefig('modularity_Scores.png')
 
 def run(mu_values, N, k, average_degree, min_communities):
-    nmi_scores, time_scores = calculate_average_nmi_for_mu_values(mu_values, N, k, average_degree, min_communities)
-    print(nmi_scores)
-    plot_nmi_scores(nmi_scores, time_scores)
+    #nmi_scores, time_scores = calculate_average_nmi_for_mu_values(mu_values, N, k, average_degree, min_communities)
+    #print(nmi_scores)
+    #plot_nmi_scores(nmi_scores, time_scores)
     
-    #modularity_scores = calculate_average_modularity_for_mu_values(mu_values, N, k, average_degree, min_communities)
-    #plot_modularity_scores(modularity_scores)
+    modularity_scores = calculate_average_modularity_for_mu_values(mu_values, N, k, average_degree, min_communities)
+    plot_modularity_scores(modularity_scores)
