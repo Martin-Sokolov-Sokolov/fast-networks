@@ -1,6 +1,9 @@
 import networkx as nx
 
+### Kernighan Lin Algorithm Implementation
 
+
+########################################## NOT USED IN THE FINAL IMPLEMENTATION ##########################################
 
 
 class KernighanLin():
@@ -86,6 +89,7 @@ class KernighanLin():
         nx.set_node_attributes(graph,attrs)
     
 
+########################################## NOT USED IN THE FINAL IMPLEMENTATION ##########################################
 
 
 

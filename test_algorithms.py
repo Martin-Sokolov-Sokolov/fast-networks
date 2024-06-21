@@ -25,9 +25,6 @@ def calculate_average_nmi_for_mu_values(mu_values, N, k, average_degree, min_com
             mcl_communities, mcl_time = execute_mcl(graph, len(true_communities))
             #mcl_communities, mcl_time = original_mcl(graph)
 
-            print(len(mcl_communities))
-            print(len(true_communities))
-
             true_labels = community_to_label(true_communities, N)
             louvain_labels = community_to_label(louvain_communities, N)
             fluidc_labels = community_to_label(fluidc_communities, N)
@@ -163,7 +160,7 @@ def plot_one_figure(nmi_scores, time_scores):
     plt.figure(figsize=(6, 4))
     plt.plot(mu_values, nmi_louvain, label='Louvain')
     plt.plot(mu_values, nmi_fluidc, label='Fluid Communities')
-    plt.plot(mu_values, nmi_mcl, label='MCL')
+    plt.plot(mu_values, nmi_mcl, label='MCL-Exp')
     plt.scatter(mu_values, nmi_louvain, marker='^')
     plt.scatter(mu_values, nmi_fluidc, marker='o')
     plt.scatter(mu_values, nmi_mcl, marker='s')
@@ -172,7 +169,25 @@ def plot_one_figure(nmi_scores, time_scores):
     plt.title('NMI Scores')
     plt.legend()
     plt.savefig('NMI_Scores.png')
+    
+def plot_one_figure_times(nmi_scores, time_scores):
+    mu_values = list(time_scores.keys())
+    time_louvain = np.array([time_scores[mu]['Louvain'] for mu in mu_values])
+    time_fluidc = np.array([time_scores[mu]['Fluid Communities'] for mu in mu_values])
+    time_mcl = np.array([time_scores[mu]['MCL'] for mu in mu_values])
 
+    plt.figure(figsize=(6, 4))
+    plt.plot(mu_values, time_louvain, label='Louvain')
+    plt.plot(mu_values, time_fluidc, label='Fluid Communities')
+    plt.plot(mu_values, time_mcl, label='MCL-Exp')
+    plt.scatter(mu_values, time_louvain, marker='^')
+    plt.scatter(mu_values, time_fluidc, marker='o')
+    plt.scatter(mu_values, time_mcl, marker='s')
+    plt.xlabel('Mu')
+    plt.ylabel('Time (seconds)')
+    plt.title('Average Completion Time')
+    plt.legend()
+    plt.savefig('Times_1000.png')
 
 def calculate_average_modularity_for_mu_values(mu_values, N, k, average_degree, min_communities, runs=1):
     modularity_scores = {mu: {'Louvain': 0, 'Fluid Communities': 0, 'MCL': 0} for mu in mu_values}
@@ -211,21 +226,17 @@ def plot_modularity_scores(modularity_scores):
     plt.figure(figsize=(6, 4))
     plt.plot(mu_values, modularity_louvain, label='Louvain')
     plt.plot(mu_values, modularity_fluidc, label='Fluid Communities')
-    plt.plot(mu_values, modularity_mcl, label='MCL')
+    plt.plot(mu_values, modularity_mcl, label='MCL-Exp')
     plt.scatter(mu_values, modularity_louvain, marker='^')
     plt.scatter(mu_values, modularity_fluidc, marker='o')
     plt.scatter(mu_values, modularity_mcl, marker='s')
     plt.xlabel('Mu')
-    plt.ylabel('Average modularity')
-    plt.title('Average modularity Scores')
+    plt.ylabel('Modularity')
+    plt.title('Modularity Scores')
     plt.legend()
-    plt.show()
-    #plt.savefig('modularity_Scores.png')
+    plt.savefig('mod.png')
 
 def run(mu_values, N, k, average_degree, min_communities):
-    #nmi_scores, time_scores = calculate_average_nmi_for_mu_values(mu_values, N, k, average_degree, min_communities)
-    #print(nmi_scores)
-    #plot_nmi_scores(nmi_scores, time_scores)
-    
-    modularity_scores = calculate_average_modularity_for_mu_values(mu_values, N, k, average_degree, min_communities)
-    plot_modularity_scores(modularity_scores)
+    nmi_scores, time_scores = calculate_average_nmi_for_mu_values(mu_values, N, k, average_degree, min_communities)
+    print(nmi_scores)
+    plot_nmi_scores(nmi_scores, time_scores)

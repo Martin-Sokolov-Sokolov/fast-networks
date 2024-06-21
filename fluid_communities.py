@@ -13,6 +13,7 @@ def fluidc(G: nx.Graph, k: int):
     if nx.is_connected(G):
         fluidc_communities = list(nx.community.asyn_fluidc(G, k = k, seed=10))
     else:
+        print('Graph is not connected')
         return [], 0
 
     end_time = time.time()

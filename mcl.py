@@ -7,13 +7,15 @@ from pagerank import pagerank
 import markov_clustering as mc
 import math
 
-def expansion(matrix, power = 2.1):
+normalization_constant = 8
+
+def expansion(matrix, power = 2):
     if isspmatrix(matrix):
         return matrix ** power
 
     return np.linalg.matrix_power(matrix, power)
     
-def inflation(matrix, power = 2.1):
+def inflation(matrix, power = 2):
     if isspmatrix(matrix):
         return matrix.power(power)
 
@@ -27,8 +29,8 @@ def add_start_clusters(matrix, starting_communities = None):
         for ind, val in starting_communities:
             rows = matrix[:, ind].nonzero()[0]
             for row in rows:
-                matrix[row, ind] += math.exp(val) / len(rows)
-                matrix[ind, row] += math.exp(val) / len(rows)
+                matrix[row, ind] += math.exp(val) / normalization_constant
+                matrix[ind, row] += math.exp(val) / normalization_constant
         
     return matrix
 
@@ -107,7 +109,7 @@ def get_clusters(A):
 
 
 def mcl(A, expansion_power = 2, inflation_power = 2, threshold = 1e-6, iterations = 100
-                              , pruning_threshold = 0.001, pruning_frequency = 1, starting_communities = None):
+                              , pruning_threshold = 0.01, pruning_frequency = 1, starting_communities = None):
 
     if not isspmatrix(A):
         A = csc_matrix(A)
@@ -129,12 +131,12 @@ def mcl(A, expansion_power = 2, inflation_power = 2, threshold = 1e-6, iteration
 def execute_mcl(G, num_communities, expansion_power = 2, inflation_power = 2, threshold = 1e-6
                                                        , iterations = 100, pruning_threshold = 0.001, pruning_frequency = 1):
     A = nx.to_numpy_array(G)
-    start_time = time.time()
     starting_communities = get_starting_clusters(G, num_communities)
+    start_time = time.time()
     result = mcl(A, expansion_power, inflation_power, threshold, iterations
                                    , pruning_threshold, pruning_frequency, starting_communities)
-    clusters = get_clusters(result)
     end_time = time.time()
+    clusters = get_clusters(result)
     execution_time = end_time - start_time
     return clusters, execution_time
 
