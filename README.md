@@ -13,5 +13,24 @@ Make sure you have Anaconda or Miniconda installed on your system. You can downl
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/your-repository.git
-cd your-repository
+git clone https://github.com/Martin-Sokolov-Sokolov/fast-networks
+cd fast-networks
+```
+
+### Step 2: Create the Conda Environment
+
+```bash
+conda env create -f environment.yml
+```
+
+### Step 3: Activate the Environment
+
+```bash
+conda activate your_environment_name
+```
+
+### Usage
+
+```bash
+python main.py
+```
